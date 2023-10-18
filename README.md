@@ -33,7 +33,8 @@
 systemctl start watchlog.timer
 ```
 - И убедиться в результате
-[!](https://github.com/dimkaspaun/systemd/blob/main/screen/18.png)
+  
+![](https://github.com/dimkaspaun/systemd/blob/main/screen/18.png)
 
 
 ## Из epel установим spawn-fcgi и перепишем init-скрипт на unit-файл. Имя сервиса должно также называться
@@ -55,16 +56,16 @@ yum install epel-release -y && yum install spawn-fcgi php php-cli mod_fcgid http
 
 - А сам юнит файл будет следующего вида - vi /etc/systemd/system/spawn-fcgi.service
 
-![](https://github.com/dimkaspaun/systemd/blob/main/screen/20.png)
+![](https://github.com/dimkaspaun/systemd/blob/main/screen/21.png)
 
 - Убеждаемся что все успешно работает
 
 ```bash
 systemctl start spawn-fcgi
 systemctl status spawn-fcgi
-
-![](https://github.com/dimkaspaun/systemd/blob/main/screen/21.png)
 ```
+![](https://github.com/dimkaspaun/systemd/blob/main/screen/22.png)
+![](https://github.com/dimkaspaun/systemd/blob/main/screen/23.png)
 
 ## Дополним юнит-файл apache httpd возможностью запустить несколько инстансов сервера с разными конфигами
 
@@ -89,6 +90,8 @@ PrivateTmp=true
 WantedBy=multi-user.target
 ```
 
+![](https://github.com/dimkaspaun/systemd/blob/main/screen/29.png)
+
 > Добавим параметр %I к EnvironmentFile=/etc/sysconfig/httpd
 
 - В самом файле окружения (которых будет два) задается опция для запуска веб-сервера с необходимым конфигурационным файлом
@@ -104,6 +107,7 @@ OPTIONS=-f conf/first.conf
 ```bash
 OPTIONS=-f conf/second.conf
 ```
+![](https://github.com/dimkaspaun/systemd/blob/main/screen/25.png)
 
 - Соответственно в директории с конфигами httpd должны лежать два конфига, в нашем случае это будут first.conf и second.conf
 
@@ -120,7 +124,7 @@ cp /etc/httpd/conf/httpd.conf /etc/httpd/conf/second.conf
 PidFile /var/run/httpd-second.pid
 Listen 8080
 ```
-
+![](https://github.com/dimkaspaun/systemd/blob/main/screen/27.png)
 - Запустим
 
 ```bash
@@ -131,4 +135,6 @@ systemctl start httpd@second
 - Проверить можно несколькими способами, например посмотреть какие порты слушаются
 
 ```bash
-ss -tnulp 
+ss -tnulp | grep httpd
+```
+![](https://github.com/dimkaspaun/systemd/blob/main/screen/30.png)
